@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, EmailStr
@@ -16,7 +18,7 @@ async def read_item(item_id: int):
 # https://fastapi.tiangolo.com/tutorial/query-params/#__tabbed_4_2
 @app.get("/items_with_params/{item_id}")
 async def read_user_item(
-        item_id: str, needy: str, skip: int = 0, limit: int | None = None
+    item_id: str, needy: str, skip: int = 0, limit: Optional[int] = None
 ):
     # Note: mixed path variables with query string
     #
@@ -40,9 +42,9 @@ async def read_user_item(
 
 class Item(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
     price: float
-    tax: float | None = None
+    tax: Optional[float] = None
 
 
 @app.post("/items/")
@@ -56,13 +58,13 @@ class UserIn(BaseModel):
     username: str
     password: str
     email: EmailStr
-    full_name: str | None = None
+    full_name: Optional[str] = None
 
 
 class UserOut(BaseModel):
     username: str
     email: EmailStr
-    full_name: str | None = None
+    full_name: Optional[str] = None
 
 
 @app.post("/user/", response_model=UserOut)
@@ -73,9 +75,9 @@ async def create_user(user: UserIn):
 
 # https://fastapi.tiangolo.com/tutorial/body-updates/?h=patch#using-pydantics-update-parameter
 class Item(BaseModel):
-    name: str | None = None
-    description: str | None = None
-    price: float | None = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
     tax: float = 10.5
     tags: list[str] = []
 

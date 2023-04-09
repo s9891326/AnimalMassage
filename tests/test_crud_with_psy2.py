@@ -59,3 +59,7 @@ class TestUserCRUD(unittest.TestCase):
         self.assertEqual(user.name, "eddy")
         self.assertEqual(user.age, 18)
         print(user)
+
+
+if __name__ == "__main__":
+    unittest.main()
