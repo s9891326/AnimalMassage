@@ -15,15 +15,15 @@ eng = create_engine(
     max_overflow=0,
     pool_pre_ping=True,
 )
-autocommit_engine = eng.execution_options(isolation_level="AUTOCOMMIT")
-SessionLocal = sessionmaker(bind=autocommit_engine)
-Base = declarative_base()
-Base.metadata.create_all(bind=eng)
 
+# 自動create database
 if not database_exists(eng.url):
     create_database(eng.url)
 
-print(database_exists(eng.url))
+autocommit_engine = eng.execution_options(isolation_level="AUTOCOMMIT")
+Session = sessionmaker(bind=autocommit_engine)
+Base = declarative_base()
+Base.metadata.create_all(bind=eng)
 
 
 def with_session(func):
