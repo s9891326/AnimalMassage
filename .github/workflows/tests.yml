@@ -27,4 +27,5 @@ jobs:
 
       - name: Run unit tests
         run: |
+          export PYTHONPATH=$(pwd)
           poetry run pytest -s -v --cov=animal_massage --cov-report term tests

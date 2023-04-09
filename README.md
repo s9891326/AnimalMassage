@@ -21,8 +21,16 @@
 poetry add pendulum@^2.0.5
 
 # Uninstall all package
-pip freeze | xargs pip uninstall -y 
+pip freeze | xargs pip uninstall -y
 ```
+
+### Error message
+```shell
+# Q: ModuleNotFoundError: No module named 'animal_massage'
+# A:
+export PYTHONPATH=/data/code/AnimalMassage/ 
+```
+
 
 #### [pytest](https://codingnote.cc/zh-tw/p/198385/)
 - -v(-verbose) : 輸出詳細資訊

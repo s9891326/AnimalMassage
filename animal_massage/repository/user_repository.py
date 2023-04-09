@@ -7,3 +7,7 @@ def create_user(db, user):
     db_user = User(uid=user.uid, name=user.name, age=user.age)
     db.add(db_user)
     return db_user
+
+
+if __name__ == "__main__":
+    create_user(User(uid="1", name="eddy", age=18))
