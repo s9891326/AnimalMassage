@@ -3,11 +3,12 @@ import warnings
 from functools import wraps
 
 import sqlalchemy
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from testcontainers.postgres import PostgresContainer
 
-Base = declarative_base()
+from animal_massage.models import User
+from animal_massage.repository.database import Base
+from animal_massage.repository.user_repository import create_user
 
 
 def db_mask(func):
@@ -26,24 +27,6 @@ def db_mask(func):
                 db.close()
 
     return wrapper
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    uid = Column(String(100), primary_key=True, unique=True, index=True)
-    name = Column(String(100))
-    age = Column(Integer)
-
-    def __str__(self):
-        return f"User uid: {self.uid}, name: {self.name}, age: {self.age}"
-
-
-def create_user(db, user):
-    db_user = User(uid=user.uid, name=user.name, age=user.age)
-    db.add(db_user)
-    db.commit()
-    return db_user
 
 
 class TestUserCRUD(unittest.TestCase):

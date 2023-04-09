@@ -20,6 +20,7 @@ testcontainers = "^3.4.2"
 sqlalchemy = "^1.4.45"
 pydantic = {version = "^1.10.2", extras = ["email"]}
 psycopg2-binary = "2.9"
+python-dotenv = "^1.0.0"
 
 
 [build-system]

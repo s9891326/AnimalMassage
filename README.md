@@ -19,6 +19,9 @@
 ```shell
 # Allow >=2.0.5, <3.0.0 versions
 poetry add pendulum@^2.0.5
+
+# Uninstall all package
+pip freeze | xargs pip uninstall -y 
 ```
 
 #### [pytest](https://codingnote.cc/zh-tw/p/198385/)
