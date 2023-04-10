@@ -25,11 +25,11 @@ class Blog(Base):
     sub_title = db.Column(db.String)
     content = db.Column(db.String)
     create_time = db.Column(db.DateTime, server_default=func.now())
-    user = relationship("User", backref="blog", lazy="dynamic")
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     # image_url
 
     def __repr__(self):
-        return f"Blog id={self.id}, {self.user_id}, {self.create_time}>"
+        return f"Blog id={self.id}, {self.title}, {self.user_id}, {self.create_time}>"
 
 
 class User(Base):
@@ -39,7 +39,7 @@ class User(Base):
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(16))
     birthday = db.Column(db.Date)
-    blog_id = db.Column(db.Integer, db.ForeignKey("blog.id"))
+    blog = relationship("Blog", backref="user", lazy="dynamic")
 
     @validates("phone")
     def validate_phone(self, _, phone):

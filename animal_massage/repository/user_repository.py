@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -10,6 +11,7 @@ from animal_massage.repository.database import with_session
 def create_user(user: "User", session: Session) -> Optional["User"]:
     db_user = User(name=user.name, phone=user.phone, birthday=user.birthday)
     session.add(db_user)
+    session.flush()
     return db_user
 
 
