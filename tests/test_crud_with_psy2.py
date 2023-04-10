@@ -9,6 +9,7 @@ from testcontainers.postgres import PostgresContainer
 from animal_massage.models import User
 from animal_massage.repository.database import Base
 from animal_massage.repository.user_repository import create_user
+from tests.base_testcontainer import BasePGTestContainer
 
 
 def db_mask(func):
@@ -29,12 +30,11 @@ def db_mask(func):
     return wrapper
 
 
-class TestUserCRUD(unittest.TestCase):
+class TestUserCRUD(BasePGTestContainer):
     def setUp(self) -> None:
         # 解决ResourceWarning: Enable tracemalloc to get the object allocation traceback
         warnings.simplefilter("ignore", ResourceWarning)
 
-    @db_mask
     def test_create_user(self, db):
         user = create_user(db, User(uid="1", name="eddy", age=18))
 

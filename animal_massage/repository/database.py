@@ -2,8 +2,7 @@ from functools import wraps
 
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
 from animal_massage import config
@@ -23,7 +22,6 @@ if not database_exists(eng.url):
 autocommit_engine = eng.execution_options(isolation_level="AUTOCOMMIT")
 Session = sessionmaker(bind=autocommit_engine)
 Base = declarative_base()
-Base.metadata.create_all(bind=eng)
 
 
 def with_session(func):

@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-BASE_DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.pardir))
+BASE_DIR = os.path.abspath(os.path.join(os.getcwd()))
 env_path = os.path.join(BASE_DIR, ".env")
 load_dotenv(dotenv_path=env_path, verbose=True)
 

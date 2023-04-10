@@ -12,4 +12,4 @@ def create_user(user: User, session: Session):
 
 
 if __name__ == "__main__":
-    create_user(User(uid="1", name="eddy", age=18))
+    create_user(User(uid="4", name="eddy", age=18))
