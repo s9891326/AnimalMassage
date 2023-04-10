@@ -1,14 +1,10 @@
 import re
 
-import sqlalchemy as sa
+import sqlalchemy as db
 from sqlalchemy import func
 from sqlalchemy.orm import relationship, validates
 
 from animal_massage.repository.database import Base
-
-# 部落格
-# image_url
-# author
 
 # 報表
 # name
@@ -18,33 +14,32 @@ from animal_massage.repository.database import Base
 # color
 # content
 
+PHONE_REGEX = r"\d{4}-\d{3}-\d{3}"
+
 
 class Blog(Base):
     __tablename__ = "blog"
 
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    title = sa.Column(sa.String)
-    sub_title = sa.Column(sa.String)
-    content = sa.Column(sa.String)
-    create_time = sa.Column(sa.DateTime, server_default=func.now())
-    user_id = sa.Column(sa.Integer, sa.ForeignKey("user.id"))
-    user = relationship("User", lazy="joined", foreign_keys=[user_id])
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String)
+    sub_title = db.Column(db.String)
+    content = db.Column(db.String)
+    create_time = db.Column(db.DateTime, server_default=func.now())
+    user = relationship("User", backref="blog", lazy="dynamic")
     # image_url
 
     def __repr__(self):
         return f"Blog id={self.id}, {self.user_id}, {self.create_time}>"
 
 
-PHONE_REGEX = r"\d{4}-\d{3}-\d{3}"
-
-
 class User(Base):
     __tablename__ = "user"
 
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String(100), nullable=False)
-    phone = sa.Column(sa.String(16))
-    birthday = sa.Column(sa.Date)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(16))
+    birthday = db.Column(db.Date)
+    blog_id = db.Column(db.Integer, db.ForeignKey("blog.id"))
 
     @validates("phone")
     def validate_phone(self, _, phone):

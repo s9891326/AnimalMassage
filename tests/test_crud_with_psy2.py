@@ -1,9 +1,10 @@
 import datetime
 import unittest
 
-from animal_massage.models import User
+from animal_massage.models import Blog, User
 
 # isort: off
+from animal_massage.repository.blog_repository import create_blog
 from animal_massage.repository.user_repository import (
     create_user,
     find_one_user,
@@ -54,9 +55,20 @@ class TestUserCRUD(BasePGTestContainer):
         self.assertEqual(user.birthday, birthday)
 
 
-# class TestBlogCRUD(BasePGTestContainer):
-#     def test_create_blog(self):
-#         pass
+class TestBlogCRUD(BasePGTestContainer):
+    blog_id: int = 1
+    title: str = "寵物華爾滋"
+    sub_title: str = "什麼是寵物按摩?"
+    content: str = "xxxx"
+    user_id: int = 1
+
+    def test_create_blog(self):
+        user = find_one_user(self.user_id, session=self.session)
+        print(user)
+        # blog = create_blog(
+        #     Blog(title=self.title, sub_title=self.sub_title, content=self.content)
+        # )
+
 
 if __name__ == "__main__":
     unittest.main()
