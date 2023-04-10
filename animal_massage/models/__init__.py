@@ -1,6 +1,8 @@
+import re
+
 import sqlalchemy as sa
 from sqlalchemy import func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from animal_massage.repository.database import Base
 
@@ -33,15 +35,26 @@ class Blog(Base):
         return f"Blog id={self.id}, {self.user_id}, {self.create_time}>"
 
 
+PHONE_REGEX = r"\d{4}-\d{3}-\d{3}"
+
+
 class User(Base):
     __tablename__ = "user"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String(100))
-    age = sa.Column(sa.Integer)
+    name = sa.Column(sa.String(100), nullable=False)
+    phone = sa.Column(sa.String(16))
+    birthday = sa.Column(sa.Date)
+
+    @validates("phone")
+    def validate_phone(self, _, phone):
+        phone_number = re.match(PHONE_REGEX, phone)
+        if phone_number:
+            return phone_number.group()
+        raise ValueError(f"Phone number regex error is not {PHONE_REGEX}")
 
     def __str__(self):
-        return f"User uid: {self.uid}, name: {self.name}, age: {self.age}"
+        return f"User id: {self.id}, name: {self.name}, phone: {self.phone}"
 
 
 # 創建table
