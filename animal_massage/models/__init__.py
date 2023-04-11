@@ -1,3 +1,4 @@
+import datetime
 import re
 
 import sqlalchemy as db
@@ -40,6 +41,11 @@ class User(Base):
     phone = db.Column(db.String(16))
     birthday = db.Column(db.Date)
     blog = relationship("Blog", backref="user", lazy="dynamic")
+
+    def __init__(self, name: str, phone: str, birthday: datetime.date):
+        self.name = name
+        self.phone = phone
+        self.birthday = birthday
 
     @validates("phone")
     def validate_phone(self, _, phone):

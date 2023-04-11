@@ -24,6 +24,14 @@ Session = sessionmaker(bind=autocommit_engine)
 Base = declarative_base()
 
 
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 def with_session(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
