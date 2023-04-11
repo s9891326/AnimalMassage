@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from animal_massage.services import LoginInput, LoginService
+from animal_massage.web.routers import user
 
 app = FastAPI()
 
@@ -12,10 +13,18 @@ def login(login_param: LoginInput):
     return LoginService(login_param).login()
 
 
-@app.get('/')
+@app.get("/")
 async def hello_world():
     return "Hello World!"
 
 
-if __name__ == '__main__':
-    uvicorn.run("animal_massage.web.app:app", host="0.0.0.0", port=8080, reload=True)
+app.include_router(
+    user.router,
+    prefix="/user",
+    tags=["user"],
+    responses={404: {"description": "Not found"}},
+)
+
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)

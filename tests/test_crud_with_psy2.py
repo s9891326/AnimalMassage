@@ -1,65 +1,138 @@
-import unittest
-import warnings
-from functools import wraps
-
-import sqlalchemy
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base, sessionmaker
-from testcontainers.postgres import PostgresContainer
-
-Base = declarative_base()
-
-
-def db_mask(func):
-    @wraps(func)
-    def wrapper(*args):
-        with PostgresContainer("postgres:9.5") as postgres:
-            engine = sqlalchemy.create_engine(postgres.get_connection_url())
-            session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-            Base.metadata.create_all(bind=engine)
-
-            db = session_local()
-            try:
-                func(db=db, *args)
-            finally:
-                print("close db")
-                db.close()
-
-    return wrapper
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    uid = Column(String(100), primary_key=True, unique=True, index=True)
-    name = Column(String(100))
-    age = Column(Integer)
-
-    def __str__(self):
-        return f"User uid: {self.uid}, name: {self.name}, age: {self.age}"
-
-
-def create_user(db, user):
-    db_user = User(uid=user.uid, name=user.name, age=user.age)
-    db.add(db_user)
-    db.commit()
-    return db_user
-
-
-class TestUserCRUD(unittest.TestCase):
-    def setUp(self) -> None:
-        # 解决ResourceWarning: Enable tracemalloc to get the object allocation traceback
-        warnings.simplefilter("ignore", ResourceWarning)
-
-    @db_mask
-    def test_create_user(self, db):
-        user = create_user(db, User(uid="1", name="eddy", age=18))
-
-        self.assertEqual(user.uid, "1")
-        self.assertEqual(user.name, "eddy")
-        self.assertEqual(user.age, 18)
-        print(user)
-
-
-if __name__ == "__main__":
-    unittest.main()
+# import datetime
+# import unittest
+#
+# from animal_massage.models import Blog, User
+#
+# # isort: off
+# from animal_massage.repository.blog_repository import (
+#     create_blog,
+#     find_one_blog,
+#     update_blog,
+#     find_more_blog,
+#     delete_blog,
+# )
+# from animal_massage.repository.user_repository import (
+#     create_user,
+#     find_one_user,
+#     update_user,
+# )
+#
+# # isort: on
+#
+# from tests.base_testcontainer import BasePGTestContainer
+#
+#
+# class TestCRUD(BasePGTestContainer):
+#     user_id: int = 1
+#     name: str = "eddy"
+#     phone: str = "0911-111-111"
+#     birthday: datetime.date = datetime.date(1977, 1, 1)
+#
+#     blog_id: int = 1
+#     title: str = "寵物華爾滋"
+#     sub_title: str = "什麼是寵物按摩?"
+#     content: str = "xxxx"
+#
+#     def test_1_create_user(self):
+#         user = create_user(
+#             User(name=self.name, phone=self.phone, birthday=self.birthday),
+#             session=self.session,
+#         )
+#         self.session.commit()
+#         self.assert_user(user, self.user_id, self.name, self.phone, self.birthday)
+#
+#     def test_2_select_user(self):
+#         user = find_one_user(self.user_id, session=self.session)
+#         self.assert_user(user, self.user_id, self.name, self.phone, self.birthday)
+#
+#     def test_3_update_user(self):
+#         _name = "eddy2"
+#         _phone = "0911-111-222"
+#         _birthday = datetime.date(1999, 1, 1)
+#         update_user(
+#             user_id=self.user_id,
+#             user=User(name=_name, phone=_phone, birthday=_birthday),
+#             session=self.session,
+#         )
+#         user = find_one_user(self.user_id, session=self.session)
+#         self.assert_user(user, self.user_id, _name, _phone, _birthday)
+#
+#     def assert_user(
+#         self, user: User, user_id: int, name: str, phone: str, birthday: datetime.date
+#     ):
+#         self.assertEqual(user.id, user_id)
+#         self.assertEqual(user.name, name)
+#         self.assertEqual(user.phone, phone)
+#         self.assertEqual(user.birthday, birthday)
+#
+#     def test_4_create_blog(self):
+#         blog = create_blog(
+#             Blog(
+#                 title=self.title,
+#                 sub_title=self.sub_title,
+#                 content=self.content,
+#                 user_id=self.user_id,
+#             ),
+#             session=self.session,
+#         )
+#         self.session.commit()
+#         self.assert_blog(
+#             blog, self.blog_id, self.title, self.sub_title, self.content, self.user_id
+#         )
+#
+#     def test_5_select_blog(self):
+#         blog = find_one_blog(self.blog_id, session=self.session)
+#         self.assert_blog(
+#             blog, self.blog_id, self.title, self.sub_title, self.content, self.user_id
+#         )
+#
+#     def test_6_update_user(self):
+#         _title = "222"
+#         _sub_title = "22222"
+#         _content = "77777"
+#         update_blog(
+#             blog_id=self.blog_id,
+#             blog=Blog(title=_title, sub_title=_sub_title, content=_content),
+#             session=self.session,
+#         )
+#         blog = find_one_blog(self.blog_id, session=self.session)
+#         self.assert_blog(blog, self.blog_id, _title, _sub_title, _content, self.user_id)
+#
+#     def test_7_find_all_blog(self):
+#         create_blog(
+#             Blog(
+#                 title=self.title,
+#                 sub_title=self.sub_title,
+#                 content=self.content,
+#                 user_id=self.user_id,
+#             ),
+#             session=self.session,
+#         )
+#         all_blog = find_more_blog(session=self.session)
+#         self.assertEqual(len(all_blog), 2)
+#
+#     def test_8_delete_blog(self):
+#         blog = find_one_blog(self.blog_id, session=self.session)
+#         self.assertTrue(blog)
+#         delete_blog(blog_id=self.blog_id, session=self.session)
+#         blog = find_one_blog(self.blog_id, session=self.session)
+#         self.assertIsNone(blog)
+#
+#     def assert_blog(
+#         self,
+#         blog: Blog,
+#         blog_id: int,
+#         title: str,
+#         sub_title: str,
+#         content: str,
+#         user_id: int,
+#     ):
+#         self.assertEqual(blog.id, blog_id)
+#         self.assertEqual(blog.title, title)
+#         self.assertEqual(blog.sub_title, sub_title)
+#         self.assertEqual(blog.content, content)
+#         self.assertEqual(blog.user_id, user_id)
+#
+#
+# if __name__ == "__main__":
+#     unittest.main()
